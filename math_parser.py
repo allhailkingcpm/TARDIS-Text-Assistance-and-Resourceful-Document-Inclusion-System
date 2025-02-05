@@ -78,7 +78,8 @@ class MathParser:
         return f"{base.strip()}{exp}"
 
     def convert_sub(self, match):
-        base, sub = match.group(1).split(',')
+        base = match.group(1)
+        sub = match.group(2)
         sub = ''.join(self.subscript_map.get(c, c) for c in sub.strip())
         return f"{base.strip()}{sub}"
 
@@ -90,6 +91,9 @@ class MathParser:
     def translate(self, text):
         # Replace power expressions using caret notation
         text = re.sub(r'(\w+|\([^)]+\))\^(\w+|\([^)]+\))', self.convert_power, text)
+        
+        # Replace subscript expressions using backslash notation
+        text = re.sub(r'(\w+|\([^)]+\))\\(\w+|\([^)]+\))', self.convert_sub, text)
         
         # Replace complex fraction expressions first
         text = re.sub(r'\((.*?)\)/\((.*?)\)', self.convert_complex_fraction, text)  # (a)/(b)
