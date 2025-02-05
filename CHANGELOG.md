@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0] - 2024
+
+### Added
+- Auto-update functionality
+- Executable distribution
+- Version checking against GitHub releases
+
 ## [1.1.0] - 2024
 
 ### Added
