@@ -1,6 +1,11 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [1.1.0] - 2024
+
+### Added
+- PDF export functionality
+- Support for exporting mathematical expressions to shareable documents
+- DejaVu Sans font support for better Unicode symbol rendering
 
 ## [1.0.0] - 2024
 

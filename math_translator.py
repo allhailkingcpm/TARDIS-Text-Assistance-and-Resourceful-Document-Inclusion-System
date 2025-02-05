@@ -10,6 +10,11 @@ import time
 from PIL import Image, ImageTk
 import os.path
 from typing import Dict, Optional
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import datetime
 
 class TabManager:
     def __init__(self, parent_frame, colors):
@@ -190,6 +195,9 @@ class MathTranslatorApp:
         self.auto_save_thread = threading.Thread(target=self.auto_save_loop, daemon=True)
         self.auto_save_thread.start()
 
+        # Register a Unicode font for math symbols
+        pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
+
     def create_toolbar(self):
         # Create TARDIS-style header
         header_frame = ctk.CTkFrame(
@@ -219,6 +227,7 @@ class MathTranslatorApp:
         self.create_tardis_button(toolbar, "💾", "Save", self.save_file)
         self.create_tardis_button(toolbar, "📂", "Load", self.load_file)
         ctk.CTkFrame(toolbar, width=2, height=25, fg_color=self.colors["police_white"]).pack(side="left", padx=10, pady=5)
+        self.create_tardis_button(toolbar, "📄", "Export PDF", self.export_pdf)
         self.create_tardis_button(toolbar, "⇌", "Align Equations", self.toggle_alignment)
         self.create_tardis_button(toolbar, "❔", "Help", self.show_help)
         self.create_tardis_button(toolbar, "📄", "New Tab", self.new_tab)
@@ -484,6 +493,48 @@ class MathTranslatorApp:
         help_text_widget.pack(padx=20, pady=20)
         help_text_widget.insert("1.0", help_text)
         help_text_widget.configure(state="disabled")
+
+    def export_pdf(self):
+        if not self.active_tab:
+            return
+
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+        )
+        
+        if not file_path:
+            return
+
+        try:
+            # Create the PDF
+            c = canvas.Canvas(file_path, pagesize=letter)
+            width, height = letter
+            c.setFont('DejaVuSans', 12)
+            
+            # Add header
+            c.setFont('DejaVuSans', 16)
+            c.drawString(50, height - 50, "Math Expression Output")
+            c.setFont('DejaVuSans', 10)
+            c.drawString(50, height - 70, f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            
+            # Add content
+            c.setFont('DejaVuSans', 12)
+            output_text = self.tab_manager.tabs[self.active_tab]['output_text'].get("1.0", "end-1c")
+            y = height - 100
+            
+            for line in output_text.split('\n'):
+                if y < 50:  # Start new page if near bottom
+                    c.showPage()
+                    y = height - 50
+                c.drawString(50, y, line)
+                y -= 20
+            
+            c.save()
+            self.show_notification("PDF exported successfully")
+        
+        except Exception as e:
+            self.show_error(f"Error exporting PDF: {str(e)}")
 
     def run(self):
         self.window.mainloop()

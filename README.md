@@ -100,6 +100,13 @@ y + 2         = 10
 long_variable = 15
 ```
 
+### Export to PDF
+- Click the "Export PDF" button in the toolbar
+- Choose a save location
+- The current output will be saved as a PDF document
+- PDF includes timestamp and formatted mathematical expressions
+- Perfect for submitting homework or sharing with others
+
 ## Keyboard Shortcuts
 
 | Action | Shortcut |
