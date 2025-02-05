@@ -39,7 +39,7 @@ python math_translator.py
 |----------|---------|
 | sqrt(x) | √x |
 | 1/2 | ½ |
-| pow(x,2) | x² |
+| x^2 | x² |
 | sub(x,1) | x₁ |
 
 ### Complex Fractions

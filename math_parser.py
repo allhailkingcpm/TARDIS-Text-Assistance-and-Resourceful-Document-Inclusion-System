@@ -72,7 +72,8 @@ class MathParser:
         }
 
     def convert_power(self, match):
-        base, exp = match.group(1).split(',')
+        base = match.group(1)
+        exp = match.group(2)
         exp = ''.join(self.superscript_map.get(c, c) for c in exp.strip())
         return f"{base.strip()}{exp}"
 
@@ -87,6 +88,9 @@ class MathParser:
         return self.fraction_map.get(fraction, f"({fraction})")
 
     def translate(self, text):
+        # Replace power expressions using caret notation
+        text = re.sub(r'(\w+|\([^)]+\))\^(\w+|\([^)]+\))', self.convert_power, text)
+        
         # Replace complex fraction expressions first
         text = re.sub(r'\((.*?)\)/\((.*?)\)', self.convert_complex_fraction, text)  # (a)/(b)
         text = re.sub(r'\((.*?)\)/(\w+)', self.convert_complex_fraction, text)      # (a)/b
